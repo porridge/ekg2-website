@@ -40,6 +40,6 @@
   <li> sms 					- wysy³anie smsów, </li>
   <li> sniff 					- wbudowany sniffer umo¿liwiaj±cy analizowanie protoko³ów. </li>
 </ul>
-<p><strong>Jest tak¿e kilka innych wtyczek nie wymienionych tutaj!</strong></p>
+<p><strong>Istnieje tak¿e kilka innych wtyczek nie wymienionych tutaj!</strong></p>
 
 <? ekg_footer(); ?>
