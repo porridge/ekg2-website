@@ -1,0 +1,21 @@
+#!/bin/bash
+# Copy all files and directories (apart from .git/ and website-scripts) into
+# the destination directory.
+DESTINATION="$1"
+DIR_MODE="0755"
+NONDIR_MASK="022"
+
+if [ -z "$DESTINATION" -o ! -d "$DESTINATION" ]; then
+	echo "Invalid destination $DESTINATION" >&2
+	exit 1
+fi
+if [ ! -d 'website-scripts' ]; then
+	echo "Must be ran in the website source root directory."
+	exit 1
+fi
+
+find . -mindepth 1 \( -name '.git*' -prune \) -o \( -path './website-scripts' -prune \) -o -type d -print | cut -c 3- | xargs -r -n 1 -I'{}' install -m "$DIR_MODE" -d "$DESTINATION/{}"
+(
+ umask "$NONDIR_MASK"
+ find . -mindepth 1 \( -name '.git*' -prune \) -o \( -path './website-scripts' -prune \) -o -not -type d -print | cut -c 3- | xargs -r -n 1 -I'{}' cp -d --preserve=timestamps "{}" "$DESTINATION/{}"
+)

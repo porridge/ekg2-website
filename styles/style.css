@@ -1,0 +1,86 @@
+body { margin: 0; font-family: "Verdana", Helvetica, sans-serif; font-size: 10pt;
+background-image: url('/images/background.jpg'); }
+
+#wrapper {
+	margin-top: 30px; 
+	text-align: center; /* hack dla IE, żeby jednak wycentrował główny blok */
+}
+#main {
+	width: 800px;
+	text-align: left; /* przywracamy normalność, bo nadrzędny blok to wrapper i ma center */
+	margin-left: auto; /* centryjemy marginesami */
+	margin-right: auto;
+	border: 1px solid #c00;
+}
+
+
+/* zeby ladnie wygladalo, musza miec ta sama wysokosc ;/
+ * 10 paddingu z titlebara + 60 szerokosc ekg2toplogo + 10 zeby jakis odstep = 80
+ */
+#titlebar {  padding-left: 10px; padding-top: 5px; 
+	background: #eeeeee url('/images/bar_h.gif') repeat;
+	border-width: 0px 0px 2px 0px; border-style: solid; border-color: #cccccc; 
+}
+#ekg2toplogo { width: 60px; height: 50px; float: left; }
+#titlebartext { margin-left: 80px; padding-top: 10px; height: 40px; }
+
+
+/* SRODEK */
+
+#srodek { padding: 3px; background-color: #f0f0f0; clear: both; } 
+#menubar { width: 150px; float: left; }
+#content { margin-left: 150px;
+	border: 1px dotted black;
+	padding: 2px 1em;
+	background-color:#f8f8f8;
+	min-height: 300px;
+}
+
+/* MENU */
+
+#menubar { padding-top: 3px; }
+ul#mainmenu { margin: 0px; padding: 0px; indent: 0px; list-style: none inside; }
+li.menuitem { margin: 0px; padding: 0px; indent: 0px; background: #eeeeee url('/images/bar_01.gif') repeat; }
+li.menuitem a { padding: 2px 0px 2px 5px; display: block; } /* make whole bar clickable */
+
+/* FOOTER */
+
+#footer { clear: both; 
+	border-width: 1px 0px 0px 0px;
+	border-style: solid;
+	border-color: #ccccfc;
+	padding:3px;
+	background: #eeeeee url('/images/bar_02.gif') repeat;
+}
+
+/* INNE */
+
+img { border: 0; }
+
+a,a:link { 
+	text-decoration: none; 
+	color: #25b;
+}
+a:hover, a:focus {
+	text-decoration: underline;
+	color: #259;
+}
+
+a em {
+	display: none;
+}
+
+.right { float: right; }
+.center { text-align: center; }
+.code { font-family: "Consolas", "Courier New", Courier, monospace; }
+.smaller { font-size: 9pt; }
+
+ul#download-svn { list-style: none inside; }
+
+ul#doclisting { list-style: square inside url('/arrow.gif'); }
+ul.authorslist li {  }
+
+table tr th { padding: 0 .5em; text-align: left; }
+table tr td { padding: 0 .5em; }
+table tr td:first-child { padding: 0; }
+
