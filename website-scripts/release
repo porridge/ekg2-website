@@ -1,0 +1,37 @@
+#!/bin/bash
+set -e
+set -x
+website="$HOME/ekg2"
+sandbox="$HOME/tmp/porridge"
+pkg="ekg2"
+origin="git://github.com/leafnode/${pkg}.git"
+tag="$1"
+if [ -z "$tag" ]; then
+	echo "Usage: $0 <tag>" >&2
+	exit 1
+fi
+tarball="${tag/_/-}.tar.gz"
+
+cd "$sandbox"
+if [ ! -d "$pkg" ]; then
+	git clone --bare "$origin"
+fi
+cd "$pkg"
+if ! git remote show origin >/dev/null; then
+	git remote add origin "$origin"
+fi
+git fetch
+cd ..
+rm -rf "${tag}"
+GIT_DIR="$pkg" git archive --prefix="${tag}/" "$tag" | tar -xf -
+cd "$tag"
+./autogen.sh --build=i386 --enable-remote --with-xosd-config=/usr/X11R6/bin/xosd-config
+PATH="$PATH:$HOME/bin" make dist
+test -f "$tarball"
+md5sum "$tarball" > "${tarball}.md5"
+chmod a+r "$tarball"{,.md5}
+mv -i "$tarball"{,.md5} "${website}/archive/"
+cd "$website"
+ln -s "archive/$tarball"{,.md5} .
+echo Now may be a good idea to sync the website
+crontab -l
