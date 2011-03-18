@@ -7,7 +7,7 @@
 <p>EKG2 is OpenSource <abbr title="instant messaging">IM</abbr> application for Unix systems (Linux, *BSD, SunOS, Solaris, MacOS, X, BeOS) available under the terms of <a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>.</p>
 <p>EKG2 is plugin-based, because of this it can support many diffrent protocols. It can also support different GUIs! Below is a list of available plugins. </p>
 
-<p><strong>Version 0.3.0 has been released! You can directly download <a href="http://pl.ekg2.org/ekg2-0.3.0.tar.gz">a tarball ready for building</a>. Other versions are in the <a href="download.php">download section</a>. </strong></p>
+<p><strong>Version 0.3.1 has been released! You can directly download <a href="http://pl.ekg2.org/ekg2-0.3.1.tar.gz">a tarball ready for building</a>. Other versions are in the <a href="download.php">download section</a>. </strong></p>
 
 <p> Protocol plugins: </p>
 <ul>

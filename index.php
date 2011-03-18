@@ -7,7 +7,7 @@
 <p>EKG2 jest wolnodostêpnym komunikatorem internetowym dla systemów unixowych (Linux, *BSD, SunOS, Solaris, MacOS, X, BeOS) dostêpnym na licencji <a href="http://www.gnu.org/copyleft/gpl.html">GPL</a>.</p>
 <p>EKG2 jest oparty na wtyczkach, dziêki temu, mo¿e obs³ugiwaæ wiele ró¿nych protoko³ów. Dziêki temu, mo¿e równie¿ obs³ugiwaæ ró¿ne interfejsy u¿ytkownika! Poni¿ej znajduje siê lista dostêpnych pluginów! </p>
 
-<p><strong>Zosta³a wydana wersja 0.3.0! Pobierz <a href="ekg2-0.3.0.tar.gz">gotow± do kompilacji paczkê</a>. Inne wersje &mdash; w sekcji <a href="download.php">download</a>. </strong></p>
+<p><strong>Zosta³a wydana wersja 0.3.1! Pobierz <a href="ekg2-0.3.1.tar.gz">gotow± do kompilacji paczkê</a>. Inne wersje &mdash; w sekcji <a href="download.php">download</a>. </strong></p>
 
 <p> Wtyczki protoko³ów: </p>
 <ul>
