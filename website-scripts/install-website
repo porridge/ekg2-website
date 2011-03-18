@@ -1,6 +1,8 @@
 #!/bin/bash
 # Copy all files and directories (apart from .git/ and website-scripts) into
 # the destination directory.
+# To install, add something like this to a crontab:
+#    9  *  *  *  *  cd $HOME/ekg2-website && git pull && ./website-scripts/install-website $HOME/ekg2
 DESTINATION="$1"
 DIR_MODE="0755"
 NONDIR_MASK="022"
