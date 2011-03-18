@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 set -x
+umask 022
 website="$HOME/ekg2"
 sandbox="$HOME/tmp/porridge"
 pkg="ekg2"
@@ -10,8 +11,18 @@ if [ -z "$tag" ]; then
 	echo "Usage: $0 <tag>" >&2
 	exit 1
 fi
-tarball="${tag/_/-}.tar.gz"
+if [ "$tag" = "HEAD" ]; then
+	date=$(date +%Y%m%d)
+	tarball="${pkg}-${date}.tar.bz2"
+	dir="${pkg}-${date}"
+	dist_target="dist-bzip2"
+else
+	tarball="${tag/_/-}.tar.gz"
+	dir="$tag"
+	dist_target="dist"
+fi
 
+# Sync repo
 cd "$sandbox"
 if [ ! -d "$pkg" ]; then
 	git clone --bare "$origin"
@@ -22,16 +33,28 @@ if ! git remote show origin >/dev/null; then
 fi
 git fetch
 cd ..
-rm -rf "${tag}"
-GIT_DIR="$pkg" git archive --prefix="${tag}/" "$tag" | tar -xf -
-cd "$tag"
+
+# Checkout, build and install tarball
+rm -rf "$dir"
+GIT_DIR="$pkg" git archive --prefix="${dir}/" "$tag" | tar -xf -
+cd "$dir"
+if [ "$tag" = "HEAD" ]; then
+	perl -pi -e "s/^AC\_INIT\(\[EKG2\], \[GIT\]\)/AC\_INIT\([EKG2], \[${date}\]\)/" configure.ac
+fi
 ./autogen.sh --build=i386 --enable-remote --with-xosd-config=/usr/X11R6/bin/xosd-config
-PATH="$PATH:$HOME/bin" make dist
+PATH="$PATH:$HOME/bin" make "$dist_target"
 test -f "$tarball"
 md5sum "$tarball" > "${tarball}.md5"
 chmod a+r "$tarball"{,.md5}
 mv -i "$tarball"{,.md5} "${website}/archive/"
+cd ..
+rm -rf "$dir"
+
+# Update website
 cd "$website"
 ln -s "archive/$tarball"{,.md5} .
-echo Now may be a good idea to sync the website
-crontab -l
+if [ "$tag" != "HEAD" ]; then
+	echo Now may be a good idea to sync the website
+	crontab -l
+fi
+
