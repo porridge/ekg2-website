@@ -39,9 +39,9 @@ rm -rf "$dir"
 GIT_DIR="$pkg" git archive --prefix="${dir}/" "$tag" | tar -xf -
 cd "$dir"
 if [ "$tag" = "HEAD" ]; then
-	perl -pi -e "s/^AC\_INIT\(\[EKG2\], \[GIT\]\)/AC\_INIT\([EKG2], \[${date}\]\)/" configure.ac
+	perl -pi -e "s/^AC\_INIT\(\[ekg2\], \[git\]\)/AC\_INIT\([ekg2], \[${date}\]\)/i" configure.ac
 fi
-./autogen.sh --build=i386 --enable-remote --with-xosd-config=/usr/X11R6/bin/xosd-config
+./autogen.sh --build=i386
 PATH="$PATH:$HOME/bin" make "$dist_target"
 test -f "$tarball"
 md5sum "$tarball" > "${tarball}.md5"
