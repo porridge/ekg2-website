@@ -16,10 +16,12 @@ if [ "$tag" = "HEAD" ]; then
 	tarball="${pkg}-${date}.tar.bz2"
 	dir="${pkg}-${date}"
 	dist_target="dist-bzip2"
+	checkout_tag="origin/master"
 else
 	tarball="${tag/_/-}.tar.gz"
 	dir="$tag"
 	dist_target="dist"
+	checkout_tag="$tag"
 fi
 
 # Sync repo
@@ -36,7 +38,7 @@ cd ..
 
 # Checkout, build and install tarball
 rm -rf "$dir"
-GIT_DIR="$pkg" git archive --prefix="${dir}/" "$tag" | tar -xf -
+GIT_DIR="$pkg" git archive --prefix="${dir}/" "$checkout_tag" | tar -xf -
 cd "$dir"
 if [ "$tag" = "HEAD" ]; then
 	perl -pi -e "s/^AC\_INIT\(\[ekg2\], \[git\]\)/AC\_INIT\([ekg2], \[${date}\]\)/i" configure.ac
@@ -46,7 +48,7 @@ PATH="$PATH:$HOME/bin" make "$dist_target"
 test -f "$tarball"
 md5sum "$tarball" > "${tarball}.md5"
 chmod a+r "$tarball"{,.md5}
-mv -i "$tarball"{,.md5} "${website}/archive/"
+mv -f "$tarball"{,.md5} "${website}/archive/"
 cd ..
 rm -rf "$dir"
 
