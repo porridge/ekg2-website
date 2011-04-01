@@ -13,13 +13,16 @@ if [ -z "$tag" ]; then
 fi
 if [ "$tag" = "HEAD" ]; then
 	date=$(date +%Y%m%d)
-	tarball="${pkg}-${date}.tar.bz2"
+	ext=".tar.bz2"
 	dir="${pkg}-${date}"
+	tarball="${dir}${ext}"
 	dist_target="dist-bzip2"
 	checkout_tag="origin/master"
 else
-	tarball="${tag/_/-}.tar.gz"
+	# Tag is something like ekg2_0.3.1
+	ext=".tar.gz"
 	dir="$tag"
+	tarball="${tag/_/-}${ext}"
 	dist_target="dist"
 	checkout_tag="$tag"
 fi
@@ -55,7 +58,10 @@ rm -rf "$dir"
 # Update website
 cd "$website"
 ln -s "archive/$tarball"{,.md5} .
-if [ "$tag" != "HEAD" ]; then
+if [ "$tag" = "HEAD" ]; then
+	ln -sf "archive/${tarball}"     "ekg2-current${ext}"
+	ln -sf "archive/${tarball}.md5" "ekg2-current${ext}.md5"
+else
 	echo Now may be a good idea to sync the website
 	crontab -l
 fi
