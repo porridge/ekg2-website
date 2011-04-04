@@ -1,6 +1,6 @@
 # Update with "crontab crontab"
 # mm hh dd mo dw  command
 MAILTO=porridge@debian.org
-   0  4  *  *  *  . $HOME/ekg2-website/website-scripts/common.sh; logging_start prune-snapshots; cd $HOME/ekg2-website && git pull && ./website-scripts/prune-snapshots -v -a $website
+   0  4  *  *  *  . $HOME/ekg2-website/website-scripts/common.sh; logging_start prune-snapshots; cd $HOME/ekg2-website && git pull && ./website-scripts/prune-snapshots -v -a $website/archive
   13  4  *  *  *  . $HOME/ekg2-website/website-scripts/common.sh; logging_start daily-snapshot ; cd $HOME/ekg2-website && git pull && ./website-scripts/release HEAD
    9  *  *  *  *  . $HOME/ekg2-website/website-scripts/common.sh; logging_start install-website; cd $HOME/ekg2-website && git pull && ./website-scripts/install-website $website
