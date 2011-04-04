@@ -1,0 +1,132 @@
+#!/usr/bin/python
+# Delete old daily snapshots.
+# Copyright 2011 Marcin Owsiany <porridge@debian.org>
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import datetime
+import getopt
+import logging
+import os
+import re
+import sys
+
+
+# Keep all snapshots younger than this, relative to the newest snapshot
+KEEP_ALL_DAYS = 14
+# Afterwards, keep one snapshot per this many days
+KEEP_SOME_FREQUENCY_DAYS = 30
+# But delete everything older than this:
+KEEP_SOME_DELTA_DAYS = 2 * 365
+
+def snapshot_time(filename):
+	if filename is None:
+		return None
+	m = re.search(r'\d{8}', filename)
+	if m:
+		return datetime.datetime.strptime(m.group(0), '%Y%m%d')
+	else:
+		raise ValueError('Could not find time in filename "%s".' % filename)
+
+
+def main():
+	opts, args = getopt.getopt(sys.argv[1:],
+		'hvna:p:', ['help', 'verbose', 'no-op', 'archive', 'pattern'])
+	verbose = False
+	no_op = False
+	archive = None
+	pattern = r'^ekg2-\d{8}.tar.bz2$'
+	for o, a in opts:
+		if o in ('-h', '--help'):
+			print '%s [-v|--verbose] [-n|--no-op] [-p|--pattern <pattern>] -a|--archive <archive_dir>' % sys.argv[0]
+			sys.exit(0)
+		elif o in ('-v', '--verbose'):
+			verbose = True
+		elif o in ('-n', '--no-op'):
+			verbose = True
+			no_op = True
+		elif o in ('-a', '--archive'):
+			archive = a
+		elif o in ('-p', '--pattern'):
+			pattern = a
+	if not archive:
+		raise ValueError('Archive option is mandatory')
+	if not os.path.isdir(archive):
+		raise ValueError('%s is not a directory' % archive)
+
+	logging.basicConfig(level=(verbose and logging.DEBUG or logging.ERROR), format='%(asctime)s %(filename)s:%(lineno)s %(levelname)s %(message)s')
+	
+	logging.debug('Listing files matching "%s" in "%s".', pattern, archive)
+	snapshots = [e for e in os.listdir(archive) if re.match(pattern, e)]
+	if not snapshots:
+		logging.info('No snapshots found.')
+		return
+	snapshots.sort() # Oldest first
+
+	# Keep all snapshots younger than this, relative to the newest snapshot
+	keep_all_delta = datetime.timedelta(KEEP_ALL_DAYS)
+	# Afterwards, keep one snapshot per this timedelta..
+	keep_some_frequency = datetime.timedelta(KEEP_SOME_FREQUENCY_DAYS)
+	# But delete everything older than this:
+	keep_some_delta = datetime.timedelta(KEEP_SOME_DELTA_DAYS)
+
+	delete_snapshots = []
+
+	most_recent_time = snapshot_time(snapshots[-1])
+	logging.debug('Most recent snapshot: %s, time %s. Analyzing others starting with oldest.', snapshots[-1], most_recent_time)
+	previous_time = None
+	for snapshot, next_snapshot in zip(snapshots, (snapshots[1:] + [None])):
+		s_time = snapshot_time(snapshot)
+		next_time = snapshot_time(next_snapshot)
+		prefix = 'snapshot %s, time %s: ' % (snapshot, s_time)
+
+		if most_recent_time - keep_all_delta <= s_time:
+			logging.debug(prefix + 'within keep_all_delta, will be KEPT')
+			previous_time = s_time
+			continue
+
+		if most_recent_time - keep_some_delta > s_time:
+			logging.debug(prefix + '%s older than most recent, will be DELETED', most_recent_time - s_time)
+			delete_snapshots.append(snapshot)
+			continue
+
+		if previous_time is None or (s_time - previous_time) >= keep_some_frequency:
+			logging.debug(prefix + 'more than %s newer than previous %s, will be KEPT', keep_some_frequency, previous_time)
+			previous_time = s_time
+		else:
+			previous_delta = s_time - previous_time
+			# Take a peek at the delta between this and NEXT one
+			next_delta = next_time - s_time
+			# Give it some slack, if this one is well isolated from both neighbours
+			double_frequency = keep_some_frequency / 2
+			if next_delta > double_frequency and previous_delta > double_frequency:
+				logging.debug(prefix + 'more than %s newer than both previous %s and next %s, will be KEPT',
+					double_frequency, previous_time, next_time)
+				previous_time = s_time
+			else:
+				logging.debug(prefix + 'just %s newer than previous %s, will be DELETED', s_time - previous_time, previous_time)
+				delete_snapshots.append(snapshot)
+
+	if not no_op:
+		for snapshot in delete_snapshots:
+			p = os.path.join(archive, snapshot)
+			logging.info('Removing "%s"', p)
+			os.remove(p)
+			if os.path.exists(p + '.md5'):
+				logging.info('Removing "%s"', p + '.md5')
+				os.remove(p + '.md5')
+         
+
+if __name__ == '__main__':
+	main()
