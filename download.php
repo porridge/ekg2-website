@@ -51,7 +51,7 @@ while (list($key, $file) = each($files)) {
 </table>
 
 <p>
-Snapshoty s± umieszczane automagicznie oko³o godziny 4 rano.
+Snapshoty s± <a href="script-logs">generowane</a> i umieszczane automagicznie oko³o godziny 4 rano.
 Jest te¿ dostêpne <a href="archive/">archiwum starych snapshotów</a>.
 </p>
 

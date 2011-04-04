@@ -49,7 +49,7 @@ chdir("en/");
 
 
 <p>
-The snapshots are generated around 4 a.m. Polish time.
+The snapshots are <a href="http://pl.ekg2.org/script-logs"</a>generated</a> around 4 a.m. Polish time.
 There is also an <a href="archive/">an archive of old snapshots</a>.
 </p>
 
