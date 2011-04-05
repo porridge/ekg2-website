@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+set -x
+umask 022
+website="$HOME/ekg2"
+sandbox="$HOME/tmp/porridge"
+pkg="ekg2"
+checkout_tag="origin/master"
+origin="git://github.com/leafnode/${pkg}.git"
+dir="${pkg}-docs"
+
+# Sync repo
+cd "$sandbox"
+if [ ! -d "$pkg" ]; then
+	git clone --bare "$origin"
+fi
+cd "$pkg"
+if ! git remote show origin >/dev/null; then
+	git remote add origin "$origin"
+fi
+git fetch
+cd ..
+
+# Checkout, process and install docs
+rm -rf "$dir"
+GIT_DIR="$pkg" git archive --prefix="${dir}/" "${checkout_tag}:docs/" | tar -xf -
+cd "$dir"
+find . -maxdepth 1 -type f -print0 | xargs -r0 perl -pi -e 's/\@([a-z0-9]*)\./*$1!/g'
+find . -maxdepth 1 -type f -print0 | xargs -r0 chmod a+r
+find . -maxdepth 1 -type f -print0 | cpio --pass-through -0mld --verbose "${website}/docs"
+cd ..
+rm -rf "$dir"
+
