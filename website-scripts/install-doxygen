@@ -1,0 +1,53 @@
+#!/bin/bash
+set -e
+set -x
+umask 022
+website="$HOME/ekg2"
+sandbox="$HOME/tmp/porridge"
+pkg="ekg2"
+checkout_tag="origin/master"
+origin="git://github.com/leafnode/${pkg}.git"
+dir="${pkg}-doxygen"
+
+# Sync repo
+cd "$sandbox"
+if [ ! -d "$pkg" ]; then
+	git clone --bare "$origin"
+fi
+cd "$pkg"
+if ! git remote show origin >/dev/null; then
+	git remote add origin "$origin"
+fi
+git fetch
+cd ..
+
+# Checkout, generate and install docs
+rm -rf "$dir"
+GIT_DIR="$pkg" git archive --prefix="${dir}/" "$checkout_tag" | tar -xf -
+cd "$dir/docs"
+
+# PL
+rm -rf ./doxygen-pl
+sed \
+  -e "s,@OUTPUT_LANGUAGE@,Polish,g;" \
+  -e "s,@OUTPUT_DIRECTORY@,./doxygen-pl,g;" \
+  -e "s,@EXTRA_FILE_PATTERNS@,doxygenpl.txt,g;" \
+  -e "s,@STRIP_FROM_PATH@,$(dirname ${PWD}),g" \
+ doxygen.settings | doxygen -
+rm -rf "${website}/doxygen"
+mv doxygen-pl "${website}/doxygen"
+
+# EN
+rm -rf ./doxygen-en
+sed \
+  -e "s,@OUTPUT_LANGUAGE@,English,g;" \
+  -e "s,@OUTPUT_DIRECTORY@,./doxygen-en,g;" \
+  -e "s,@EXTRA_FILE_PATTERNS@,,g;" \
+  -e "s,@STRIP_FROM_PATH@,$(dirname ${PWD}),g" \
+ doxygen.settings | doxygen -
+rm -rf "${website}/en/doxygen"
+mv doxygen-en "${website}/en/doxygen"
+
+cd ../..
+rm -rf "$dir"
+
