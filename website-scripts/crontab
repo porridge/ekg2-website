@@ -1,6 +1,7 @@
 # Update with "crontab crontab"
 # mm hh dd mo dw  command
 MAILTO=porridge@debian.org
+SHELL=/bin/bash
   23  3  *  *  *  . $HOME/ekg2-website/website-scripts/common.sh; logging_start install-docs-dir; cd $HOME/ekg2-website && git pull && ./website-scripts/install-docs-dir
   47  3  *  *  *  . $HOME/ekg2-website/website-scripts/common.sh; logging_start install-doxygen; cd $HOME/ekg2-website && git pull && ./website-scripts/install-doxygen
    7  4  *  *  *  . $HOME/ekg2-website/website-scripts/common.sh; logging_start prune-snapshots; cd $HOME/ekg2-website && git pull && ./website-scripts/prune-snapshots -v -a $website/archive
